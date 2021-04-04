@@ -99,7 +99,7 @@ public class EntityLockerTest {
             "200, 100, 2"
     })
     @SneakyThrows
-    void entitylocker_provides_lock_timeout(long lockTimeMs, long jobTimeMs, int expectedValue) {
+    void entitylocker_with_lock_timeout(long lockTimeMs, long jobTimeMs, int expectedValue) {
         ExecutorService executorService = Executors.newFixedThreadPool(2);
         EntityLocker entityLocker = new EntityLocker(true);
         IntValueEntity<Integer> entity1 = new IntValueEntity<>(1, 0);
@@ -115,7 +115,7 @@ public class EntityLockerTest {
 
     @Test
     @SneakyThrows
-    void two_threads_check_deadlock_prevented() {
+    void deadlock_prevented() {
         ExecutorService executorService = Executors.newFixedThreadPool(2);
         EntityLocker entityLocker = new EntityLocker(true);
 
@@ -132,13 +132,13 @@ public class EntityLockerTest {
         ArgumentCaptor<LoggingEvent> logCaptor = ArgumentCaptor.forClass(LoggingEvent.class);
         verify(mockLogAppender).doAppend(logCaptor.capture());
 
-        assertEquals("Deadlock detected, expected entities lock order: [1, 2]",
-                logCaptor.getValue().getFormattedMessage());
+        assertEquals("Deadlock detected, expected entities lock order: {}",
+                logCaptor.getValue().getMessage());
     }
 
     @Test
     @SneakyThrows
-    void tree_threads_check_no_false_deadlock() {
+    void tree_threads_no_false_deadlock() {
         ExecutorService executorService = Executors.newFixedThreadPool(3);
         EntityLocker entityLocker = new EntityLocker(true);
 
